@@ -1,2 +1,3 @@
 # vue-seeds
-boilerplates for vue with webpack
+
+vue with webpack, jquery, bootstrap_sass

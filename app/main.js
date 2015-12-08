@@ -1,3 +1,4 @@
+require("bootstrap-sass/assets/javascripts/bootstrap.js")
 import Vue from 'vue';
 import Router from 'vue-router'
 import App from './app.vue'
@@ -18,7 +19,6 @@ var router = new Router({
 	hashbang: true,
 	history: false
 })
-
 
 router.map({
 	'/pagea/': {

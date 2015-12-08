@@ -7,13 +7,20 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin")
 var ROOT_PATH = path.resolve(__dirname);
 var APP_PATH = path.resolve(ROOT_PATH, 'app');
 var BUILD_PATH = path.resolve(ROOT_PATH, 'dist');
+var APP_TITLE = "vue seeds";
+var PUBLIC_PATH="/";
 
 module.exports = {
   entry: APP_PATH + '/main.js',
   output: {
     path: BUILD_PATH,
-    publicPath: '/',
+    publicPath: PUBLIC_PATH,
     filename: '[name].bundle.[hash].js',
+  },
+  resolve: {
+    alias: {
+      jquery: "jquery/src/jquery.js"
+    }
   },
   module: {
     loaders: [{
@@ -53,6 +60,9 @@ module.exports = {
       }, {
         test: /\.woff2$/,
         loader: "url-loader?limit=10000&mimetype=application/font-woff2"
+      }, {/*Fix Cannot read property 'match' of undefined error. see https://github.com/webpack/webpack/issues/1066 for details*/
+        test: /jquery\/src\/selector\.js$/,
+        loader: 'amd-define-factory-patcher-loader'
       }
     ]
   },
@@ -67,10 +77,15 @@ module.exports = {
     plugins: ['transform-runtime']
   },
   plugins: [new htmlWebpackPlugin({
-      title: 'Vue seeds',
+      title: APP_TITLE,
       template: APP_PATH + '/index.html'
     }),
-    new ExtractTextPlugin("[contenthash].css")
+    new ExtractTextPlugin("[contenthash].css"),
+    new webpack.ProvidePlugin({
+      $: "jquery",
+      jQuery: "jquery",
+      "window.jQuery": "jquery"
+    })
   ]
 }
 
@@ -86,7 +101,8 @@ if (process.env.NODE_ENV === 'production') {
         warnings: false
       }
     }),
-    new webpack.optimize.OccurenceOrderPlugin()
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.optimize.DedupePlugin()
   ];
   if (module.exports.plugins) {
     module.exports.plugins = module.exports.plugins.concat(productionPlugin);
